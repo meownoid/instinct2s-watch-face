@@ -1,0 +1,13 @@
+<drawables>
+    <bitmap id="LauncherIcon" filename="launcher-icon.png" />
+    <bitmap id="Time0" filename="time-0.png" />
+    <bitmap id="Time1" filename="time-1.png" />
+    <bitmap id="Time2" filename="time-2.png" />
+    <bitmap id="Time3" filename="time-3.png" />
+    <bitmap id="Time4" filename="time-4.png" />
+    <bitmap id="Time5" filename="time-5.png" />
+    <bitmap id="Time6" filename="time-6.png" />
+    <bitmap id="Time7" filename="time-7.png" />
+    <bitmap id="Time8" filename="time-8.png" />
+    <bitmap id="Time9" filename="time-9.png" />
+</drawables>
