@@ -16,7 +16,7 @@ const HOUR_Y = 8;
 const MINUTE_X = HOUR_X;
 const MINUTE_Y = HOUR_Y + TIME_FONT_HEIGHT + 8;
 
-const BATTERY_WIDTH = 25;
+const BATTERY_WIDTH = 24;
 const BATTERY_HEIGHT = 13;
 
 const BATTERY_X = 115;
@@ -98,8 +98,8 @@ class MainView extends WatchFace {
     }
 
     function drawBatteryInfo(dc as Dc, remaining as Float, remainingDays as Float, x as Number, y as Number) as Void {
-        var u = x + $.BATTERY_WIDTH;
-        var v = y + $.BATTERY_HEIGHT;
+        var u = x + $.BATTERY_WIDTH - 1;
+        var v = y + $.BATTERY_HEIGHT - 1;
 
         var remainingTime = remainingDays;
         var remainingSuffix = "d";
@@ -112,8 +112,13 @@ class MainView extends WatchFace {
         dc.drawLine(x, v, u, v);
         dc.drawLine(x, y, x, v);
         dc.drawLine(u, y, u, v + 1);
-        dc.drawLine(u + 1, y + 3, u + 1, v - 3);
-        dc.fillRectangle(x + 2, y + 2, ((remaining + 0.5) / 100 * ($.BATTERY_WIDTH - 3) + 0.5).toNumber(), $.BATTERY_HEIGHT - 3);
+        dc.drawLine(u + 1, y + 3, u + 1, v - 2);
+        dc.fillRectangle(
+            x + 2,
+            y + 2,
+            (remaining / 100 * ($.BATTERY_WIDTH - 4) + 0.5).toNumber(),
+            $.BATTERY_HEIGHT - 4
+        );
         dc.drawText(
             x,
             v + 3,
