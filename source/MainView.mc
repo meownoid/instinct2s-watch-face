@@ -18,6 +18,12 @@ const MINUTE_Y = HOUR_Y + TIME_FONT_HEIGHT + 8;
 
 const WEEK_DAYS = ["NUL", "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
+const BATTERY_WIDTH = 25;
+const BATTERY_HEIGHT = 13;
+
+const BATTERY_X = 115;
+const BATTERY_Y = 8 + 8 + 66;
+
 
 class MainView extends WatchFace {
     var timeFontBitmaps as Array<BitmapResource>;
@@ -72,10 +78,28 @@ class MainView extends WatchFace {
         dc.drawBitmap(x, y, self.timeFontBitmaps[digit0]);
     }
 
+    function drawBatteryInfo(dc as Dc, remaining as Float, remainingDays as Float, x as Number, y as Number) as Void {
+        var u = x + $.BATTERY_WIDTH;
+        var v = y + $.BATTERY_HEIGHT;
+
+        dc.drawLine(x, y, u, y);
+        dc.drawLine(x, v, u, v);
+        dc.drawLine(x, y, x, v);
+        dc.drawLine(u, y, u, v + 1);
+        dc.drawLine(u + 1, y + 3, u + 1, v - 3);
+        dc.fillRectangle(x + 2, y + 2, ((remaining + 0.5) / 100 * ($.BATTERY_WIDTH - 3) + 0.5).toNumber(), $.BATTERY_HEIGHT - 3);
+        dc.drawText(
+            x,
+            v + 3,
+            Graphics.FONT_SMALL,
+            Lang.format("$1$d", [remainingDays.toNumber()]),
+            Graphics.TEXT_JUSTIFY_LEFT
+        );
+    }
+
     function onUpdate(dc as Dc) as Void {
         var timeInfo = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
 
-        View.onUpdate(dc);
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_BLACK);
         dc.clear();
 
@@ -99,5 +123,10 @@ class MainView extends WatchFace {
             timeInfo.day.format("%02d"),
             Graphics.TEXT_JUSTIFY_CENTER
         );
+
+        var stats = System.getSystemStats();
+
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+        drawBatteryInfo(dc, stats.battery, stats.batteryInDays, $.BATTERY_X, $.BATTERY_Y);
     }
 }
