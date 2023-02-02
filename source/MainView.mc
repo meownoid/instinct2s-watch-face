@@ -16,8 +16,6 @@ const HOUR_Y = 8;
 const MINUTE_X = HOUR_X;
 const MINUTE_Y = HOUR_Y + TIME_FONT_HEIGHT + 8;
 
-const WEEK_DAYS = ["NUL", "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-
 const BATTERY_WIDTH = 25;
 const BATTERY_HEIGHT = 13;
 
@@ -78,6 +76,27 @@ class MainView extends WatchFace {
         dc.drawBitmap(x, y, self.timeFontBitmaps[digit0]);
     }
 
+    function drawCalendar(dc as Dc, day as Number, dayOfWeek as String) as Void {
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+        dc.fillCircle(self.subscreenCenterX, self.subscreenCenterY, self.subscreenR);
+
+        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(
+            self.subscreenCenterX,
+            self.subscreenCenterY - 24,
+            Graphics.FONT_MEDIUM,
+            dayOfWeek.toUpper(),
+            Graphics.TEXT_JUSTIFY_CENTER
+        );
+        dc.drawText(
+            self.subscreenCenterX,
+            self.subscreenCenterY - 8,
+            Graphics.FONT_NUMBER_MILD,
+            day.format("%02d"),
+            Graphics.TEXT_JUSTIFY_CENTER
+        );
+    }
+
     function drawBatteryInfo(dc as Dc, remaining as Float, remainingDays as Float, x as Number, y as Number) as Void {
         var u = x + $.BATTERY_WIDTH;
         var v = y + $.BATTERY_HEIGHT;
@@ -98,7 +117,8 @@ class MainView extends WatchFace {
     }
 
     function onUpdate(dc as Dc) as Void {
-        var timeInfo = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
+        var timeInfo = Gregorian.info(Time.now(), Time.FORMAT_MEDIUM);
+        var stats = System.getSystemStats();
 
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_BLACK);
         dc.clear();
@@ -106,27 +126,9 @@ class MainView extends WatchFace {
         self.drawNumber(dc, timeInfo.hour, $.HOUR_X, $.HOUR_Y);
         self.drawNumber(dc, timeInfo.min, $.MINUTE_X, $.MINUTE_Y);
 
-        dc.fillCircle(self.subscreenCenterX, self.subscreenCenterY, self.subscreenR);
-
-        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(
-            self.subscreenCenterX,
-            self.subscreenCenterY - 24,
-            Graphics.FONT_MEDIUM,
-            $.WEEK_DAYS[timeInfo.day_of_week],
-            Graphics.TEXT_JUSTIFY_CENTER
-        );
-        dc.drawText(
-            self.subscreenCenterX,
-            self.subscreenCenterY - 8,
-            Graphics.FONT_NUMBER_MILD,
-            timeInfo.day.format("%02d"),
-            Graphics.TEXT_JUSTIFY_CENTER
-        );
-
-        var stats = System.getSystemStats();
+        self.drawCalendar(dc, timeInfo.day, timeInfo.day_of_week);
 
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        drawBatteryInfo(dc, stats.battery, stats.batteryInDays, $.BATTERY_X, $.BATTERY_Y);
+        self.drawBatteryInfo(dc, stats.battery, stats.batteryInDays, $.BATTERY_X, $.BATTERY_Y);
     }
 }
