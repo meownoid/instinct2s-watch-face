@@ -101,6 +101,13 @@ class MainView extends WatchFace {
         var u = x + $.BATTERY_WIDTH;
         var v = y + $.BATTERY_HEIGHT;
 
+        var remainingTime = remainingDays;
+        var remainingSuffix = "d";
+        if (remainingTime < 1.0) {
+            remainingTime *= 24;
+            remainingSuffix = "h";
+        }
+
         dc.drawLine(x, y, u, y);
         dc.drawLine(x, v, u, v);
         dc.drawLine(x, y, x, v);
@@ -111,7 +118,7 @@ class MainView extends WatchFace {
             x,
             v + 3,
             Graphics.FONT_SMALL,
-            Lang.format("$1$d", [remainingDays.toNumber()]),
+            Lang.format("$1$$2$", [remainingTime.toNumber(), remainingSuffix]),
             Graphics.TEXT_JUSTIFY_LEFT
         );
     }
