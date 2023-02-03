@@ -1,9 +1,9 @@
 import Toybox.Graphics;
 import Toybox.Lang;
 import Toybox.System;
-import Toybox.WatchUi;
 import Toybox.Time;
 import Toybox.Time.Gregorian;
+import Toybox.WatchUi;
 
 
 const TIME_FONT_WIDTH = 48;
@@ -16,11 +16,7 @@ const HOUR_Y = 8;
 const MINUTE_X = HOUR_X;
 const MINUTE_Y = HOUR_Y + TIME_FONT_HEIGHT + 8;
 
-const BATTERY_WIDTH = 24;
-const BATTERY_HEIGHT = 13;
-
-const BATTERY_X = 115;
-const BATTERY_Y = 8 + 8 + 66;
+const LOW_BATTERY_THRESHOLD = 20.0;
 
 
 class MainView extends WatchFace {
@@ -76,11 +72,11 @@ class MainView extends WatchFace {
         dc.drawBitmap(x, y, self.timeFontBitmaps[digit0]);
     }
 
-    function drawCalendar(dc as Dc, day as Number, dayOfWeek as String) as Void {
-        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+    function drawCalendar(dc as Dc, day as Number, dayOfWeek as String, dark as Boolean) as Void {
+        dc.setColor(dark ? Graphics.COLOR_BLACK : Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         dc.fillCircle(self.subscreenCenterX, self.subscreenCenterY, self.subscreenR);
 
-        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(dark ? Graphics.COLOR_WHITE : Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             self.subscreenCenterX,
             self.subscreenCenterY - 24,
@@ -97,37 +93,6 @@ class MainView extends WatchFace {
         );
     }
 
-    function drawBatteryInfo(dc as Dc, remaining as Float, remainingDays as Float, x as Number, y as Number) as Void {
-        var u = x + $.BATTERY_WIDTH - 1;
-        var v = y + $.BATTERY_HEIGHT - 1;
-
-        var remainingTime = remainingDays;
-        var remainingSuffix = "d";
-        if (remainingTime < 1.0) {
-            remainingTime *= 24;
-            remainingSuffix = "h";
-        }
-
-        dc.drawLine(x, y, u, y);
-        dc.drawLine(x, v, u, v);
-        dc.drawLine(x, y, x, v);
-        dc.drawLine(u, y, u, v + 1);
-        dc.drawLine(u + 1, y + 3, u + 1, v - 2);
-        dc.fillRectangle(
-            x + 2,
-            y + 2,
-            (remaining / 100 * ($.BATTERY_WIDTH - 4) + 0.5).toNumber(),
-            $.BATTERY_HEIGHT - 4
-        );
-        dc.drawText(
-            x,
-            v + 3,
-            Graphics.FONT_SMALL,
-            Lang.format("$1$$2$", [remainingTime.toNumber(), remainingSuffix]),
-            Graphics.TEXT_JUSTIFY_LEFT
-        );
-    }
-
     function onUpdate(dc as Dc) as Void {
         var timeInfo = Gregorian.info(Time.now(), Time.FORMAT_MEDIUM);
         var stats = System.getSystemStats();
@@ -138,9 +103,6 @@ class MainView extends WatchFace {
         self.drawNumber(dc, timeInfo.hour, $.HOUR_X, $.HOUR_Y);
         self.drawNumber(dc, timeInfo.min, $.MINUTE_X, $.MINUTE_Y);
 
-        self.drawCalendar(dc, timeInfo.day, timeInfo.day_of_week);
-
-        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        self.drawBatteryInfo(dc, stats.battery, stats.batteryInDays, $.BATTERY_X, $.BATTERY_Y);
+        self.drawCalendar(dc, timeInfo.day, timeInfo.day_of_week, stats.battery <= $.LOW_BATTERY_THRESHOLD);
     }
 }
