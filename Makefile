@@ -19,7 +19,7 @@ release: out
 
 run:
 	"$(SDK_PATH)/bin/connectiq"
-	"$(SDK_PATH)/bin/monkeydo" bin/watchface.prg instinct2s
+	"$(SDK_PATH)/bin/monkeydo" bin/watchface.prg $(DEVICE)
 
 build: bin
 	"$(SDK_PATH)/bin/monkeyc" -w -d $(DEVICE)_sim -f monkey.jungle -o bin/watchface.prg -y $(KEY_PATH)
