@@ -21,7 +21,6 @@ const LOW_BATTERY_THRESHOLD = 20.0;
 
 class MainView extends WatchFace {
     var timeFontBitmaps as Array<BitmapResource>;
-    var timeFontWidths as Array<Number>;
 
     var subscreenBox as BoundingBox;
     var subscreenCenterX as Number;
@@ -44,11 +43,6 @@ class MainView extends WatchFace {
             WatchUi.loadResource(Rez.Drawables.Time9)
         ];
 
-        self.timeFontWidths = new [10];
-        for (var i = 0; i < 10; i++) {
-            self.timeFontWidths[i] = self.timeFontBitmaps[i].getWidth();
-        }
-
         self.subscreenBox = WatchUi.getSubscreen();
         self.subscreenCenterX = self.subscreenBox.x + self.subscreenBox.width / 2;
         self.subscreenCenterY = self.subscreenBox.y + self.subscreenBox.height / 2;
@@ -56,20 +50,9 @@ class MainView extends WatchFace {
     }
 
     function drawNumber(dc as Dc, num as Number, x as Number, y as Number) as Void {
-        var digit0 = num % 10;
-        var digit1 = num / 10;
-
-        var digit1width = self.timeFontWidths[digit1];
-        var digit1diff = $.TIME_FONT_WIDTH - digit1width;
-        var digit1offset = digit1diff / 2;
-        var digit0left = ($.TIME_FONT_WIDTH - self.timeFontWidths[digit0]) / 2;
-        var digit1right = digit1diff - digit1offset;
-        var digit0offset = digit1width + digit1right + $.TIME_FONT_SPACING + digit0left;
-
-        x += digit1offset;
-        dc.drawBitmap(x, y, self.timeFontBitmaps[digit1]);
-        x += digit0offset;
-        dc.drawBitmap(x, y, self.timeFontBitmaps[digit0]);
+        dc.drawBitmap(x, y, self.timeFontBitmaps[num / 10]);
+        x += $.TIME_FONT_WIDTH + $.TIME_FONT_SPACING;
+        dc.drawBitmap(x, y, self.timeFontBitmaps[num % 10]);
     }
 
     function drawCalendar(dc as Dc, day as Number, dayOfWeek as String, dark as Boolean) as Void {
