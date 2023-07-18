@@ -1,4 +1,4 @@
-KEY_PATH := /Users/meownoid/Documents/My/Keys/garmin-developer.der
+KEY_PATH := /Users/meownoid/Documents/Keys/garmin-developer.der
 DEVICE := instinct2s
 
 SDK_PATH := $(shell cat "$(HOME)/Library/Application Support/Garmin/ConnectIQ/current-sdk.cfg")
